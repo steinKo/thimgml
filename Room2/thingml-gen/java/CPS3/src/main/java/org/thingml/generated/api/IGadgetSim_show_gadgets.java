@@ -1,0 +1,8 @@
+package org.thingml.generated.api;
+
+import org.thingml.generated.api.*;
+
+public interface IGadgetSim_show_gadgets{
+void sensorinfo_via_show_gadgets(String GeneralMsg_sensorinfo_model_var, String GeneralMsg_sensorinfo_proto_var, short GeneralMsg_sensorinfo_sid_var, short GeneralMsg_sensorinfo_dataTypes_var, float GeneralMsg_sensorinfo_temperature_var, int GeneralMsg_sensorinfo_humidity_var, int GeneralMsg_sensorinfo_timeStamp_var);
+void deviceinfo_via_show_gadgets(short GeneralMsg_deviceinfo_did_var, String GeneralMsg_deviceinfo_name_var, String GeneralMsg_deviceinfo_model_var, String GeneralMsg_deviceinfo_proto_var, String GeneralMsg_deviceinfo_ttype_var, short GeneralMsg_deviceinfo_meth_var, String GeneralMsg_deviceinfo_lastCmd_var, int GeneralMsg_deviceinfo_lastValue_var);
+}
