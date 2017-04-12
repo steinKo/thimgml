@@ -162,7 +162,7 @@ thing ThermometerSet includes PSMSensorSet,TemperatureMsg, GeneralMsg, PSM_Msg, 
 				temp_s = 0
 				while (i<last_thermo)do
 					id_s=thermometers[i]
-					temp_s= temp_s +(thermoval[i]	*thermoweight[i])
+					temp_s= temp_s +(thermoval[i]*thermoweight[i])
 					// SIMULATION: if the temperature is outside reasonable range, do not return temperature. Simulates thermometer error
 					i=i+1
 				end 
@@ -211,12 +211,14 @@ thing ThermometerSet includes PSMSensorSet,TemperatureMsg, GeneralMsg, PSM_Msg, 
 
 
 thing OnOffSet includes PSM_Msg, GeneralMsg, OnOffMsg{
-	provided port require_val {receives SwitchOn, SwitchOff, add_device}
+	provided port require_val {receives SwitchOn, SwitchOff,SwitchOnCategory, SwitchOffCategory, add_device}
 	provided port initial {receives initialize}
 	required port show_val {sends SwitchOn, SwitchOff}
 	
 	property ts:Tellstick // kick-down 
 	property onoffswitches:Integer[25] // Identifiers of the onoffswitches in the set
+	property onoffswitchestext:String[25]
+	property onoffswitchesCategory:Integer[25]
 	property last_onoff:Integer = 0 // number of onoff switches in the set 
 	
 	// SIMULATION
@@ -244,44 +246,60 @@ thing OnOffSet includes PSM_Msg, GeneralMsg, OnOffMsg{
 				did=add_dev.did
 				
 				onoffswitches[last_onoff]=did
+				onoffswitchestext[last_onoff]=add_dev.txt
+				onoffswitchesCategory[last_onoff]=add_dev.category
+				
 				last_onoff = last_onoff+1
 			end
 			transition -> Idle
 			event swon: require_val?SwitchOn
 			action do
-				did=swon.did
+				
 				i=0
-				found = false
-				while (i<last_onoff and (not found)) do
-					if (did==onoffswitches[i]) do
-						found=true // trick to terminate while loop
+				
+				while (i<last_onoff ) do
+					if (onoffswitchesCategory[i]==1) do
+					   poweron[i]=true // ON by SIMULATION
+					   show_val!SwitchOn(onoffswitches[i])
+					    print("SIMULATION: Power ON on device #") print(did) print("\n")	
 					end
 					i=i+1
 				end
-				if (found) do
-					poweron[i-1]=true // ON by SIMULATION
-					show_val!SwitchOn(did)
-					// TODO remove when tested print("SIMULATION: Power ON on device #") print(did) print("\n")
-				end
+	
 			end
 			transition -> Idle
-			event swoff: require_val?SwitchOff
+			event swon: require_val?SwitchOnCategory
 			action do
-				did=swoff.did
+				
 				i=0
-				found = false
-				while (i<last_onoff and (not found)) do
-					if (did==onoffswitches[i]) do
-						found=true // trick to terminate while loop
+				
+				while (i<last_onoff ) do
+					if (onoffswitchesCategory[i]== swon.category) do
+					   poweron[i]=true // ON by SIMULATION
+					   show_val!SwitchOn(onoffswitches[i])
+					    print("SIMULATION: Power ON on category") print(did) print("\n")	
 					end
 					i=i+1
 				end
-				if (found) do
-					poweron[i-1]=false // OFF by SIMULATION
-					show_val!SwitchOff(did)
-					// TODO remove when tested print("SIMULATION: Power OFF on device #") print(did) print("\n")
-				end
+	
 			end
+			transition -> Idle
+			event swoff: require_val?SwitchOffCategory
+			action do
+
+				i=0
+				while (i<last_onoff) do
+					if (onoffswitchesCategory[i] == swoff.category) do
+				
+					  poweron[i]=false
+					  show_val!SwitchOff(onoffswitches[i])
+					  print("SIMULATION: Power OFF category") print(onoffswitches[i]) print("\n")
+					end
+					i=i+1
+				 end
+					 //print("SIMULATION: Power OFF on device #") print(did) print("\n")
+				end
+			
 			
 		}
 	}

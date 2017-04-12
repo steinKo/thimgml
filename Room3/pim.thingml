@@ -21,10 +21,10 @@ thing PIM includes GeneralMsg, TemperatureMsg, OnOffMsg, TimerMsgs {
 		sends add_thermometer, set_polling_interval
 	}
 	required port request_actuator{
-		sends add_device, SwitchOn, SwitchOff
+		sends add_device, SwitchOn, SwitchOff, SwitchOnCategory, SwitchOffCategory
 	}
 	provided port human_input {
-		receives add_thermometer, add_device, SwitchOn, SwitchOff, set_temperature, set_polling_interval
+		receives add_thermometer, add_device, SwitchOn, SwitchOff, set_temperature, set_polling_interval,SwitchOnCategory, SwitchOffCategory
 	}
 	required port human_output {
 		sends temperature, prompt
@@ -49,6 +49,7 @@ thing PIM includes GeneralMsg, TemperatureMsg, OnOffMsg, TimerMsgs {
 	property thermo_id:Integer // the single thermometer identifier
 	property switch_id:Integer // the single on-off switch identifier
 	property noOfTerm:Integer = 1
+	property noOfDev:Integer = 1
 	property lasttemp:Double = 0 // the last temperature recorded, buffering one measurement
 	
 	statechart PIM_behavior init Build {
@@ -66,12 +67,12 @@ thing PIM includes GeneralMsg, TemperatureMsg, OnOffMsg, TimerMsgs {
 					human_output!prompt("temometer added") // SIMULATION: prompting on console for the user to react properly
 				end
 				
-				transition -> SetThermostat
+				transition -> AddDevice
 				event adddev:human_input?add_device
 				action do
 					switch_id=adddev.did
-					request_actuator!add_device(switch_id)
-					human_output!prompt("Please give thermostat temperature setting") // SIMULATION: prompting on console for the user to react properly
+					request_actuator!add_device(switch_id,adddev.txt,adddev.category)
+					human_output!prompt("DEvive added .add more devices") // SIMULATION: prompting on console for the user to react properly
 				end
 				
 				transition -> AddDevice
@@ -87,6 +88,8 @@ thing PIM includes GeneralMsg, TemperatureMsg, OnOffMsg, TimerMsgs {
 				//event human_input?add_device
 				event human_input?SwitchOn
 				event human_input?SwitchOff
+				event human_input?SwitchOnCategory
+				event human_input?SwitchOffCategory
 				event human_input?set_temperature
 				event human_input?set_polling_interval
 				action do
@@ -95,17 +98,29 @@ thing PIM includes GeneralMsg, TemperatureMsg, OnOffMsg, TimerMsgs {
 				// temperature is handled on Build level
 			}
 			state AddDevice {
+			    transition -> AddDevice
+			    event adddev:human_input?add_device
+			    guard (noOfDev<10)
+				action do
+				    noOfDev= noOfDev + 1
+					switch_id=adddev.did
+					request_actuator!add_device(switch_id,adddev.txt,adddev.category)
+					human_output!prompt("Device Added") // SIMULATION: prompting on console for the user to react properly
+				 end
 				transition -> SetThermostat
 				event adddev:human_input?add_device
+				guard (noOfDev==10)
 				action do
 					switch_id=adddev.did
-					request_actuator!add_device(switch_id)
+					request_actuator!add_device(switch_id,adddev.txt,adddev.category)
 					human_output!prompt("Please give thermostat temperature setting") // SIMULATION: prompting on console for the user to react properly
 				end
 				
 				transition -> AddDevice
 				event human_input?SwitchOn
 				event human_input?SwitchOff
+				event human_input?SwitchOnCategory
+				event human_input?SwitchOffCategory
 				event human_input?set_polling_interval
 				action do
 					human_output!prompt("Please add device")
@@ -124,6 +139,8 @@ thing PIM includes GeneralMsg, TemperatureMsg, OnOffMsg, TimerMsgs {
 				event human_input?add_device
 				event human_input?SwitchOn
 				event human_input?SwitchOff
+				event human_input?SwitchOnCategory
+				event human_input?SwitchOffCategory
 				event human_input?set_polling_interval
 				action do
 					human_output!prompt("Please set temperature for Thermostat")
@@ -250,6 +267,16 @@ thing PIM includes GeneralMsg, TemperatureMsg, OnOffMsg, TimerMsgs {
 				action do
 					request_actuator!SwitchOff(swoff.did)
 				end 
+					transition -> On
+				event swon:human_input?SwitchOnCategory
+				action do
+					request_actuator!SwitchOn(swon.category)
+				end 
+				transition -> Off
+				event swoff:human_input?SwitchOffCategory
+				action do
+					request_actuator!SwitchOff(swoff.category)
+				end 
 				transition -> Thermostat
 				event set_temp:human_input?set_temperature
 				action do
@@ -263,11 +290,22 @@ thing PIM includes GeneralMsg, TemperatureMsg, OnOffMsg, TimerMsgs {
 				action do
 					request_actuator!SwitchOff(swoff.did)
 				end 
+				transition -> Off
+				event swoff:human_input?SwitchOffCategory
+				action do
+					request_actuator!SwitchOffCategory(swoff.category)
+				end 
 				transition -> On
 				event swon:human_input?SwitchOn
 				action do
 					request_actuator!SwitchOn(swon.did)
 				end
+				transition -> On
+				event swon:human_input?SwitchOnCategory
+				action do
+					request_actuator!SwitchOnCategory(swon.category)
+				end
+				
 				transition -> Thermostat
 				event set_temp:human_input?set_temperature
 				action do
@@ -286,10 +324,20 @@ thing PIM includes GeneralMsg, TemperatureMsg, OnOffMsg, TimerMsgs {
 				action do
 					request_actuator!SwitchOff(swoff.did)
 				end 
+				transition -> Off
+				event swoff:human_input?SwitchOffCategory
+				action do
+					request_actuator!SwitchOffCategory(swoff.category)
+				end 
 				transition -> On
 				event swon:human_input?SwitchOn
 				action do
 					request_actuator!SwitchOn(swon.did)
+				end
+				transition -> On
+				event swon:human_input?SwitchOnCategory
+				action do
+					request_actuator!SwitchOnCategory(swon.category)
 				end
 				transition -> Thermostat
 				event set_temp:human_input?set_temperature
@@ -323,6 +371,8 @@ thing PIM includes GeneralMsg, TemperatureMsg, OnOffMsg, TimerMsgs {
 			transition -> Running
 			event human_input?SwitchOn
 			event human_input?SwitchOff
+			event human_input?SwitchOnCategory
+			event human_input?SwitchOffCategory
 			event human_input?set_temperature
 			action do
 				human_output!prompt("INTERNAL ERROR: Impossible messages at PIM.Running")

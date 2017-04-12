@@ -20,12 +20,14 @@ thing fragment TemperatureMsg {
 // Devices actuators in general
 
 thing fragment DeviceGeneral {
-	message add_device(did:Integer,txt:String,category:CategoryType);
+	message add_device(did:Integer,txt:String,category:Integer);
 }
 
 // On/Off actuators
 thing fragment OnOffMsg includes DeviceGeneral{
 	message SwitchOn(did:Integer);
 	message SwitchOff(did:Integer);
+	message SwitchOnCategory(category:Integer);
+	message SwitchOffCategory(category:Integer);
 }
 

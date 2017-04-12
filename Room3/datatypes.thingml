@@ -125,8 +125,8 @@ enumeration DigitalState
 {
 	LOW @enum_val "0"
 	HIGH @enum_val "1"
-}
 
+}
 datatype LongLong<8>
     @type_checker "Integer"
     @c_type "long long"
