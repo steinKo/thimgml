@@ -260,12 +260,12 @@ thing PIM includes GeneralMsg, TemperatureMsg, OnOffMsg, TimerMsgs {
 				transition -> On
 				event swon:human_input?SwitchOn
 				action do
-					request_actuator!SwitchOn(swon.did)
+					request_actuator!SwitchOn()
 				end 
 				transition -> Off
 				event swoff:human_input?SwitchOff
 				action do
-					request_actuator!SwitchOff(swoff.did)
+					request_actuator!SwitchOff()
 				end 
 					transition -> On
 				event swon:human_input?SwitchOnCategory
@@ -288,7 +288,7 @@ thing PIM includes GeneralMsg, TemperatureMsg, OnOffMsg, TimerMsgs {
 				transition -> Off
 				event swoff:human_input?SwitchOff
 				action do
-					request_actuator!SwitchOff(swoff.did)
+					request_actuator!SwitchOff()
 				end 
 				transition -> Off
 				event swoff:human_input?SwitchOffCategory
@@ -298,7 +298,7 @@ thing PIM includes GeneralMsg, TemperatureMsg, OnOffMsg, TimerMsgs {
 				transition -> On
 				event swon:human_input?SwitchOn
 				action do
-					request_actuator!SwitchOn(swon.did)
+					request_actuator!SwitchOn()
 				end
 				transition -> On
 				event swon:human_input?SwitchOnCategory
@@ -322,7 +322,7 @@ thing PIM includes GeneralMsg, TemperatureMsg, OnOffMsg, TimerMsgs {
 				transition -> Off
 				event swoff:human_input?SwitchOff
 				action do
-					request_actuator!SwitchOff(swoff.did)
+					request_actuator!SwitchOff()
 				end 
 				transition -> Off
 				event swoff:human_input?SwitchOffCategory
@@ -332,7 +332,7 @@ thing PIM includes GeneralMsg, TemperatureMsg, OnOffMsg, TimerMsgs {
 				transition -> On
 				event swon:human_input?SwitchOn
 				action do
-					request_actuator!SwitchOn(swon.did)
+					request_actuator!SwitchOn()
 				end
 				transition -> On
 				event swon:human_input?SwitchOnCategory

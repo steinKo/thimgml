@@ -25,8 +25,8 @@ thing fragment DeviceGeneral {
 
 // On/Off actuators
 thing fragment OnOffMsg includes DeviceGeneral{
-	message SwitchOn(did:Integer);
-	message SwitchOff(did:Integer);
+	message SwitchOn();
+	message SwitchOff();
 	message SwitchOnCategory(category:Integer);
 	message SwitchOffCategory(category:Integer);
 }

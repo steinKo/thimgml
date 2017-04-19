@@ -261,7 +261,23 @@ thing OnOffSet includes PSM_Msg, GeneralMsg, OnOffMsg{
 					if (onoffswitchesCategory[i]==1) do
 					   poweron[i]=true // ON by SIMULATION
 					   show_val!SwitchOn(onoffswitches[i])
-					    print("SIMULATION: Power ON on device #") print(did) print("\n")	
+					    print("SIMULATION: Power ON on device #") print(onoffswitches[i]) print("\n")	
+					end
+					i=i+1
+				end
+	
+			end
+			transition -> Idle
+			event swoff: require_val?SwitchOff
+			action do
+				
+				i=0
+				
+				while (i<last_onoff ) do
+					if (onoffswitchesCategory[i]==1) do
+					   poweron[i]=false // ON by SIMULATION
+					   show_val!SwitchOn(onoffswitches[i])
+					    print("SIMULATION: Power off  device #") print(onoffswitches[i]) print("\n")	
 					end
 					i=i+1
 				end
@@ -277,7 +293,7 @@ thing OnOffSet includes PSM_Msg, GeneralMsg, OnOffMsg{
 					if (onoffswitchesCategory[i]== swon.category) do
 					   poweron[i]=true // ON by SIMULATION
 					   show_val!SwitchOn(onoffswitches[i])
-					    print("SIMULATION: Power ON on category") print(did) print("\n")	
+					    print("SIMULATION: Power ON on category") print(onoffswitches[i]) print("\n")	
 					end
 					i=i+1
 				end
